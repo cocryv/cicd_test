@@ -49,7 +49,7 @@ def home():
             <h1>🚀 CI/CD Demo App</h1>
             <div class="status">✓ Running</div>
             <p class="info">Deployed via Jenkins Pipeline on GKE</p>
-            <p class="info">Version: 1.0.0</p>
+            <p class="info">Version: 2.0</p>
         </div>
     </body>
     </html>
