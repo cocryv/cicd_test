@@ -1,0 +1,35 @@
+# =============================================================================
+# SERVICE.YAML - Expose l'application au réseau
+# =============================================================================
+# Un Service donne une IP stable aux pods (les pods ont des IPs qui changent)
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  # ---------------------------------------------------------------------------
+  # Type de Service
+  # ---------------------------------------------------------------------------
+  # - ClusterIP : accessible seulement dans le cluster (défaut)
+  # - NodePort : accessible via IP_NODE:PORT
+  # - LoadBalancer : crée un Load Balancer GCP avec IP publique
+  # ---------------------------------------------------------------------------
+  type: {{ .Values.service.type }}           # LoadBalancer
+
+  # ---------------------------------------------------------------------------
+  # Ports
+  # ---------------------------------------------------------------------------
+  ports:
+    - port: {{ .Values.service.port }}       # 80 (port externe)
+      targetPort: {{ .Values.service.targetPort }}  # 8090 (port du container)
+      protocol: TCP
+      name: http
+
+  # ---------------------------------------------------------------------------
+  # Selector : vers quels pods envoyer le trafic
+  # ---------------------------------------------------------------------------
+  selector:
+    app: {{ .Chart.Name }}

@@ -1,0 +1,11 @@
+# =============================================================================
+# CHART.YAML - Métadonnées du Helm Chart
+# =============================================================================
+# Ce fichier décrit le chart Helm (comme un package.json pour Node.js)
+
+apiVersion: v2                    # Version de l'API Helm (v2 = Helm 3)
+name: demo-app                    # Nom du chart
+description: Demo app pour CI/CD pipeline
+type: application                 # Type: application (pas une library)
+version: 1.0.0                    # Version du CHART (pas de l'app)
+appVersion: "1.0.0"               # Version de l'APPLICATION

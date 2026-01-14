@@ -1,0 +1,43 @@
+# =============================================================================
+# VALUES.YAML - Valeurs par défaut du Helm Chart
+# =============================================================================
+# Ces valeurs peuvent être surchargées avec --set ou -f custom-values.yaml
+
+# -----------------------------------------------------------------------------
+# IMAGE DOCKER
+# -----------------------------------------------------------------------------
+image:
+  repository: europe-west1-docker.pkg.dev/project-ba895609-81c6-42c7-8f3/cicd-docker-repo/demo-app
+  tag: latest
+  pullPolicy: Always              # Always = toujours pull (utile pour :latest)
+
+# -----------------------------------------------------------------------------
+# REPLICAS (nombre de pods)
+# -----------------------------------------------------------------------------
+replicaCount: 2                   # 2 pods pour la haute disponibilité
+
+# -----------------------------------------------------------------------------
+# SERVICE (expose l'app au réseau)
+# -----------------------------------------------------------------------------
+service:
+  type: LoadBalancer              # LoadBalancer = IP publique sur GCP
+  port: 80                        # Port externe (ce que les users voient)
+  targetPort: 8090                # Port du container (ton app Flask)
+
+# -----------------------------------------------------------------------------
+# RESOURCES (CPU/RAM pour chaque pod)
+# -----------------------------------------------------------------------------
+resources:
+  requests:                       # Minimum garanti
+    memory: "128Mi"
+    cpu: "100m"                   # 100 millicores = 0.1 CPU
+  limits:                         # Maximum autorisé
+    memory: "256Mi"
+    cpu: "200m"
+
+# -----------------------------------------------------------------------------
+# HEALTH CHECKS (Kubernetes vérifie si l'app est vivante)
+# -----------------------------------------------------------------------------
+healthCheck:
+  path: /health                   # Endpoint de ton app Flask
+  port: 8090

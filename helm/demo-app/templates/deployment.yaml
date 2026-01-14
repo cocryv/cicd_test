@@ -1,0 +1,64 @@
+# =============================================================================
+# DEPLOYMENT.YAML - Définit comment déployer les pods
+# =============================================================================
+# Un Deployment gère la création et mise à jour des pods
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}                    # demo-app (vient de Chart.yaml)
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  # ---------------------------------------------------------------------------
+  # Nombre de pods à créer
+  # ---------------------------------------------------------------------------
+  replicas: {{ .Values.replicaCount }}       # 2 (vient de values.yaml)
+
+  # ---------------------------------------------------------------------------
+  # Selector : comment identifier les pods gérés par ce deployment
+  # ---------------------------------------------------------------------------
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+
+  # ---------------------------------------------------------------------------
+  # Template : modèle pour créer chaque pod
+  # ---------------------------------------------------------------------------
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          # Image Docker à utiliser
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # Port exposé par le container
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+
+          # Ressources CPU/RAM
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          # ---------------------------------------------------------------------------
+          # HEALTH CHECKS
+          # ---------------------------------------------------------------------------
+          # Liveness : si fail, Kubernetes restart le pod
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: {{ .Values.healthCheck.port }}
+            initialDelaySeconds: 10          # Attend 10s avant le 1er check
+            periodSeconds: 30                # Vérifie toutes les 30s
+
+          # Readiness : si fail, le pod ne reçoit pas de trafic
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: {{ .Values.healthCheck.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
